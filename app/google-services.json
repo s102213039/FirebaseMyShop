@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "871222222402",
+    "firebase_url": "https://fir-myshop.firebaseio.com",
+    "project_id": "fir-myshop",
+    "storage_bucket": "fir-myshop.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:871222222402:android:573a3d991b4e53eca797db",
+        "android_client_info": {
+          "package_name": "com.yanli.myshop"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "871222222402-kes9c907e5mom4ph6enegb25u4n9ek0e.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.yanli.myshop",
+            "certificate_hash": "b926fb0b4b85c02c381540730b38d5d98a9e3f96"
+          }
+        },
+        {
+          "client_id": "871222222402-b2gdbh25eb830ib8f7ko0uip8vv1glj5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCn64ZcM2dQ1e1T3nkfoea_Kwtu4CBsR5s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "871222222402-b2gdbh25eb830ib8f7ko0uip8vv1glj5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
