@@ -1,4 +1,4 @@
-package com.yanli.myshop.Activity
+package com.yanli.myshop.activity
 
 import android.app.Activity
 import android.app.AlertDialog

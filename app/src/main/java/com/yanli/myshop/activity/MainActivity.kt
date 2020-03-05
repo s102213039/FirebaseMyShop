@@ -1,14 +1,18 @@
-package com.yanli.myshop.Activity
+package com.yanli.myshop.activity
 
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuItem
-import android.view.View
+import android.view.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.firebase.ui.auth.AuthUI
+import com.firebase.ui.firestore.FirestoreRecyclerAdapter
+import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.yanli.myshop.R
+import com.yanli.myshop.holder.ItemHolder
+import com.yanli.myshop.model.Item
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
 import java.util.*
@@ -16,6 +20,7 @@ import java.util.*
 class MainActivity : AppCompatActivity(), FirebaseAuth.AuthStateListener {
 
     private val REQUEST_LOGIN = 101
+    private lateinit var adapter : FirestoreRecyclerAdapter<Item, ItemHolder>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,16 +41,47 @@ class MainActivity : AppCompatActivity(), FirebaseAuth.AuthStateListener {
                     }
                 }
         }
+
+        //recyclerView
+        recycler.setHasFixedSize(true)
+        recycler.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        var query = FirebaseFirestore.getInstance()
+            .collection("items")
+            .limit(10)
+        val options = FirestoreRecyclerOptions.Builder<Item>()
+            .setQuery(query, Item::class.java)
+            .build()
+        adapter = object : FirestoreRecyclerAdapter<Item, ItemHolder>(options) {
+            override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemHolder {
+                layoutInflater
+                return ItemHolder(
+                    LayoutInflater.from(parent.context).inflate(
+                        R.layout.item_row,
+                        parent,
+                        false
+                    )
+                )
+            }
+
+            override fun onBindViewHolder(holder: ItemHolder, position: Int, model: Item) {
+                holder.bindTo(model)
+            }
+
+        }
+
+        recycler.adapter = adapter
     }
 
     override fun onStart() {
         super.onStart()
         FirebaseAuth.getInstance().addAuthStateListener(this)
+        adapter.startListening()
     }
 
     override fun onStop() {
         super.onStop()
         FirebaseAuth.getInstance().removeAuthStateListener(this)
+        adapter.stopListening()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -112,7 +148,7 @@ class MainActivity : AppCompatActivity(), FirebaseAuth.AuthStateListener {
         val user = auth.currentUser
         if (user != null) {
             tv_id.text = "Email: ${user.email} / ${user.isEmailVerified}"
-            btn_verify.visibility = if (user.isEmailVerified) View.GONE else View.VISIBLE
+//            btn_verify.visibility = if (user.isEmailVerified) View.GONE else View.VISIBLE
         } else {
             tv_id.text = "Not login"
             btn_verify.visibility = View.GONE
