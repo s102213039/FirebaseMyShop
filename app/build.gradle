@@ -67,3 +67,7 @@ dependencies {
 
     implementation 'com.facebook.android:facebook-android-sdk:[5,6)'
 }
+
+androidExtensions{
+    experimental = true
+}
