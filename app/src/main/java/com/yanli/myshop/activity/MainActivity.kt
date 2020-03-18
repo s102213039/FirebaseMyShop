@@ -14,6 +14,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.yanli.myshop.R
+import com.yanli.myshop.database.ItemDatabase
 import com.yanli.myshop.holder.ItemHolder
 import com.yanli.myshop.model.Category
 import com.yanli.myshop.model.Item
@@ -25,8 +26,6 @@ import java.util.*
 class MainActivity : AppCompatActivity(), FirebaseAuth.AuthStateListener {
 
     private val REQUEST_LOGIN = 101
-
-    //    private lateinit var adapter: FirestoreRecyclerAdapter<Item, ItemHolder>
     var categories = mutableListOf<Category>()
     private lateinit var itemAdapter: ItemAdapter
     private lateinit var itemViewModel: ItemViewModel
@@ -84,7 +83,7 @@ class MainActivity : AppCompatActivity(), FirebaseAuth.AuthStateListener {
                                     position: Int,
                                     id: Long
                                 ) {
-//                                    setAdapter()
+                                    itemViewModel.setCategory(categories[position].id)
                                 }
                             }
                     }
@@ -94,22 +93,19 @@ class MainActivity : AppCompatActivity(), FirebaseAuth.AuthStateListener {
         //recyclerView
         itemViewModel = ViewModelProvider(this@MainActivity).get(ItemViewModel::class.java)
         itemViewModel.getItems().observe(this, androidx.lifecycle.Observer {
-            var list = mutableListOf<Item>()
-            for (document in it.documents) {
-                val item = document.toObject(Item::class.java) ?: Item()
-                item.id = document.id
-                list.add(item)
-            }
-            itemAdapter.items = list
+
+            itemAdapter.items = it
             itemAdapter.notifyDataSetChanged()
+//
+//            it.forEach { item ->
+//                ItemDatabase.getDatabase(this)?.getItemDao()?.addItem(item)
+//            }
         })
 
         itemAdapter = ItemAdapter(mutableListOf())
         recycler.setHasFixedSize(true)
         recycler.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         recycler.adapter = itemAdapter
-
-//        setAdapter()
     }
 
     inner class ItemAdapter(var items: List<Item>) : RecyclerView.Adapter<ItemHolder>() {
@@ -132,45 +128,6 @@ class MainActivity : AppCompatActivity(), FirebaseAuth.AuthStateListener {
         }
     }
 
-//    private fun setAdapter() {
-//        val selected = spinner.selectedItemPosition
-//        val query = if (selected > 0) {
-//            adapter.stopListening()
-//            FirebaseFirestore.getInstance()
-//                .collection("items")
-//                .whereEqualTo("category", categories[selected].id)
-//                .orderBy("viewCount", Query.Direction.DESCENDING)
-//                .limit(10)
-//        } else {
-//            FirebaseFirestore.getInstance()
-//                .collection("items")
-//                .orderBy("viewCount", Query.Direction.DESCENDING)
-//                .limit(10)
-//        }
-//
-//        val options = FirestoreRecyclerOptions.Builder<Item>()
-//            .setQuery(query, Item::class.java)
-//            .build()
-//        adapter = object : FirestoreRecyclerAdapter<Item, ItemHolder>(options) {
-//            override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemHolder {
-//                val view = LayoutInflater.from(parent.context).inflate(
-//                    R.layout.item_row, parent, false
-//                )
-//                return ItemHolder(view)
-//            }
-//
-//            override fun onBindViewHolder(holder: ItemHolder, position: Int, model: Item) {
-//                model.id = snapshots.getSnapshot(position).id
-//                holder.bindTo(model)
-//                holder.itemView.setOnClickListener {
-//                    itemClicked(model, position)
-//                }
-//            }
-//        }
-//        recycler.adapter = adapter
-//        adapter.startListening()
-//    }
-
     private fun itemClicked(model: Item, position: Int) {
         val intent = Intent(this, DetailActivity::class.java)
         intent.putExtra("item", model)
@@ -180,13 +137,11 @@ class MainActivity : AppCompatActivity(), FirebaseAuth.AuthStateListener {
     override fun onStart() {
         super.onStart()
         FirebaseAuth.getInstance().addAuthStateListener(this)
-//        adapter.startListening()
     }
 
     override fun onStop() {
         super.onStop()
         FirebaseAuth.getInstance().removeAuthStateListener(this)
-//        adapter.stopListening()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
