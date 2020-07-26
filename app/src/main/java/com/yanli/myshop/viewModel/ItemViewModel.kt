@@ -1,20 +1,23 @@
 package com.yanli.myshop.viewModel
 
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import com.yanli.myshop.livaData.FirestoreQueryLiveData
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
+import com.yanli.myshop.ItemRepository
 import com.yanli.myshop.model.Item
 
-class ItemViewModel : ViewModel() {
-    private var items = MutableLiveData<List<Item>>()
+class ItemViewModel(application: Application) : AndroidViewModel(application) {
+    private lateinit var itemRepository: ItemRepository
 
-    private var firestoreQueryLiveData = FirestoreQueryLiveData()
-
-    fun getItems(): FirestoreQueryLiveData {
-        return firestoreQueryLiveData
+    init {
+        itemRepository = ItemRepository(application)
     }
 
-    fun setCategory(categoryId:String){
-        firestoreQueryLiveData.setCategory(categoryId)
+    fun getItems(): LiveData<List<Item>> {
+        return itemRepository.getAllItems()
+    }
+
+    fun setCategory(categoryId: String) {
+        itemRepository.setCategory(categoryId)
     }
 }

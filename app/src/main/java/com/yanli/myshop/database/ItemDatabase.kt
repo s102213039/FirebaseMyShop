@@ -19,7 +19,7 @@ abstract class ItemDatabase : RoomDatabase() {
                 .build()
         }
 
-        fun getDatabase(context: Context): ItemDatabase? {
+        fun getDatabase(context: Context): ItemDatabase {
             this.context = context
             return database
         }
