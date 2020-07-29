@@ -25,4 +25,8 @@
 
     </style>
 
+    <style name="watch_checkbox">
+        <item name="android:button">@drawable/watch_status</item>
+    </style>
+
 </resources>

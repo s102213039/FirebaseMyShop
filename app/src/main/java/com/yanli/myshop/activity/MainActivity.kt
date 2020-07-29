@@ -94,6 +94,11 @@ class MainActivity : AppCompatActivity(), FirebaseAuth.AuthStateListener {
         itemViewModel = ViewModelProvider(this@MainActivity).get(ItemViewModel::class.java)
         itemViewModel.getItems().observe(this, androidx.lifecycle.Observer {
 
+            Thread {
+                for (item in it) {
+                    ItemDatabase.getDatabase(this).getItemDao().addItem(item)
+                }
+            }.run()
             itemAdapter.items = it
             itemAdapter.notifyDataSetChanged()
 //

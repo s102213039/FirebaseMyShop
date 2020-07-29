@@ -18,4 +18,5 @@
 
     <string name="facebook_application_id">2902753509783542</string>
     <string name="facebook_login_protocol_scheme">fb2902753509783542</string>
+    <string name="add_follow">加入追蹤</string>
 </resources>
