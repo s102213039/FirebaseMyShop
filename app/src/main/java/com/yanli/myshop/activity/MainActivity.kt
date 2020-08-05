@@ -188,6 +188,10 @@ class MainActivity : AppCompatActivity(), FirebaseAuth.AuthStateListener {
                 FirebaseAuth.getInstance().signOut()
                 true
             }
+            R.id.action_biometric -> {
+                startActivity(Intent(this, BioMetricActivity::class.java))
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
     }

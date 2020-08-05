@@ -46,13 +46,13 @@ class DetailActivity : AppCompatActivity() {
         watch.setOnCheckedChangeListener { button, checked ->
             if (checked) {
                 FirebaseFirestore.getInstance().collection("users")
-                    .document(uid!!)
+                    .document(uid)
                     .collection("watchItems")
                     .document(item.id)
                     .set(WatchItem(item.id))
             }else{
                 FirebaseFirestore.getInstance().collection("users")
-                    .document(uid!!)
+                    .document(uid)
                     .collection("watchItems")
                     .document(item.id)
                     .delete()
