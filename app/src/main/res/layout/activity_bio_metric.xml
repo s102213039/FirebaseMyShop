@@ -11,9 +11,40 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="log in"
+        app:layout_constraintBottom_toTopOf="@id/notification_on"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed" />
+
+    <Button
+        android:id="@+id/notification_on"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="顯示通知"
+        app:layout_constraintBottom_toTopOf="@id/notification_off"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/log_in" />
+
+    <Button
+        android:id="@+id/notification_download"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="下載顯示通知"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/notification_off" />
+
+    <Button
+        android:id="@+id/notification_off"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="關閉通知"
+        app:layout_constraintBottom_toTopOf="@id/notification_download"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/notification_on" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

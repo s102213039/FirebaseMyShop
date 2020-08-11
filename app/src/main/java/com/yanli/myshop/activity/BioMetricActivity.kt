@@ -1,15 +1,23 @@
 package com.yanli.myshop.activity
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.content.Context
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
 import android.security.keystore.UserNotAuthenticatedException
 import android.util.Log
+import android.widget.RemoteViews
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import com.facebook.internal.FacebookRequestErrorClassification.KEY_NAME
 import com.yanli.myshop.R
@@ -28,10 +36,20 @@ class BioMetricActivity : AppCompatActivity() {
     private lateinit var executor: Executor
     private lateinit var biometricPrompt: BiometricPrompt
     private lateinit var promptInfo: BiometricPrompt.PromptInfo
+    private lateinit var notificationManager: NotificationManager
+    private lateinit var mBuilder: NotificationCompat.Builder
+
+    companion object {
+        val CHANNEL_ID = "TEST"
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_bio_metric)
+
+        notificationManager =
+            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
 
         val biometricManager = BiometricManager.from(this)
         when (biometricManager.canAuthenticate()) {
@@ -117,6 +135,116 @@ class BioMetricActivity : AppCompatActivity() {
         log_in.setOnClickListener {
             biometricPrompt.authenticate(promptInfo)
         }
+
+
+        notification_on.setOnClickListener {
+            showNotification()
+        }
+
+        notification_off.setOnClickListener {
+            cancelNotification()
+        }
+
+        notification_download.setOnClickListener {
+            showDownloadNotification()
+        }
+    }
+
+    private fun showDownloadNotification() {
+        initRemoteView()
+    }
+
+    private fun initRemoteView() {
+        createNotificationChannel()
+
+
+        mBuilder = NotificationCompat.Builder(this, "lottery")
+        with(mBuilder) {
+//            setWhen(System.currentTimeMillis())
+            setSmallIcon(R.drawable.ic_launcher_foreground)
+//            setCustomBigContentView(RemoteViews(application.packageName, R.layout.progress))
+            priority = NotificationCompat.PRIORITY_MAX
+            setAutoCancel(true)
+//            setDefaults(NotificationCompat.FLAG_ONLY_ALERT_ONCE)
+        }
+
+
+        fakeDownload()
+
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//            val channel = NotificationChannel(
+//                "lottery",
+//                this.getString(R.string.app_name),
+//                NotificationManager.IMPORTANCE_DEFAULT
+//            )
+//            channel.setSound(null, null)
+//        }
+
+
+//        val updatePendingIntent = PendingIntent.getActivity(
+//            this, 0,
+//            Intent(this, RemoteViews::class.java), 0
+//        )
+
+
+        with(mBuilder.build()) {
+//            contentIntent = updatePendingIntent
+//            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+                contentView = RemoteViews(application.packageName, R.layout.progress)
+                contentView.setProgressBar(R.id.progressBar1, 100, 0, false)
+                contentView.setTextViewText(R.id.textView1, "0%")
+                contentView.setTextViewText(
+                    R.id.text_update_name,
+                    "hahaha... " + getString(R.string.app_name)
+                )
+//            }
+        }
+    }
+
+    private fun createNotificationChannel() {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val name = "Hello"
+            val descriptionText = "Fuck off"
+            val importance = NotificationManager.IMPORTANCE_DEFAULT
+            val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
+                description = descriptionText
+                setSound(null, null)
+            }
+            // Register the channel with the system
+            notificationManager =
+                getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(channel)
+        }
+    }
+
+    private fun showNotification() {
+        createNotificationChannel()
+        mBuilder = NotificationCompat.Builder(this, CHANNEL_ID)
+        val intent = Intent(this, MainActivity::class.java)
+        val pendingIntent =
+            PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+
+        with(mBuilder) {
+            setSmallIcon(R.drawable.ic_launcher_foreground)
+            setContentTitle("This is a title")
+            setContentText("This is a text")
+            priority = NotificationCompat.PRIORITY_MAX
+            setAutoCancel(true)
+            setContentIntent(pendingIntent)
+        }
+
+
+//        notificationManager.notify(0, mBuilder.build())
+        with(NotificationManagerCompat.from(this)) {
+            notify(0, mBuilder.build())
+        }
+    }
+
+    private fun cancelNotification() {
+        notificationManager.cancelAll()
+        notificationManager.cancel(0)
     }
 
     private fun generateSecretKey(keyGenParameterSpec: KeyGenParameterSpec) {
@@ -170,5 +298,39 @@ class BioMetricActivity : AppCompatActivity() {
                 biometricPrompt.authenticate(promptInfo)
             }
         }
+    }
+
+    private fun fakeDownload() {
+        // Start a the operation in a background thread
+
+        // Start a the operation in a background thread
+        Thread {
+            Log.e("TAG", "fakeDownload: HHHHHHHHHHHHHHHHHHHHH")
+            var incr = 0
+            // Do the "lengthy" operation 20 times
+            while (incr <= 100) {
+                Log.e("TAG", "fakeDownload: ${incr}")
+
+                // Sets the progress indicator to a max value, the current completion percentage and "determinate" state
+                mBuilder.setProgress(100, incr, false)
+                // Displays the progress bar for the first time.
+                with(NotificationManagerCompat.from(this)) {
+                    notify(0, mBuilder.build())
+                }                // Sleeps the thread, simulating an operation
+                try {
+                    // Sleep for 1 second
+                    Thread.sleep(1 * 1000.toLong())
+                } catch (e: InterruptedException) {
+                    Log.d("TAG", "sleep failure")
+                }
+                incr += 5
+            }
+            // When the loop is finished, updates the notification
+            mBuilder.setContentText("Download completed") // Removes the progress bar
+                .setProgress(0, 0, false)
+            with(NotificationManagerCompat.from(this)) {
+                notify(0, mBuilder.build())
+            }
+        }.start()
     }
 }
